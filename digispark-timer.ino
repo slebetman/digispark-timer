@@ -1,50 +1,39 @@
 #include <SoftRcPulseOut.h>
+#include "tick.h"
+#include "ramp.h"
+#include "delay.h"
 
-SoftRcPulseOut servo1;
-unsigned int pos;
-bool dir;
+SoftRcPulseOut throttle;
+Tick timer;
+Ramp rampUp;
+Ramp rampDown;
+Delay pause;
 
-void setup() {                
+void setup() {
   pinMode(0, OUTPUT);
   pinMode(1, OUTPUT);
 
-  servo1.attach(0);
-  pos = 1000;
-  dir = true;
+  throttle.attach(0);
+  initialize();
 }
 
-
-// 1 millisecond tick
-uint32_t _tick;
-bool tick () {
-  uint32_t t = millis();
-  if (t != _tick) {
-    _tick = t;
-    return true;
-  }
-  return false;
+void initialize () {
+  rampUp.init(1000, 2000, 1 SECOND);
+  pause.init(5 SECONDS);
+  rampDown.init(2000, 1000, 10 SECONDS);
 }
 
+// Main loop
 void loop() {
-  if (tick()) {
-    if (dir) {
-      if (pos < 2000) {
-        pos += 2;
-      }
-      else {
-        dir = false;
-      }
+  if (timer.tick()) {
+    if (rampUp.run()) {
+      throttle.write_us(rampUp.value);
     }
-    else {
-      if (pos > 1000) {
-        pos -= 2;
-      }
-      else {
-        dir = true;
-      }
+    else if (pause.wait() && rampDown.run()) {
+      throttle.write_us(rampDown.value);
     }
-    servo1.write_us(pos);
-  }    
+    // ELSE TIMER ENDS
+  }
 
   SoftRcPulseOut::refresh();
 }

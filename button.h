@@ -1,7 +1,7 @@
 class Button {
   private:
     int count;
-    int timer;
+    int longCount;
     bool clicked;
         
   public:
@@ -11,7 +11,7 @@ class Button {
 
     void init () {
       count = 0;
-      timer = 0;
+      longCount = 0;
       clicked = false;
     }
 
@@ -21,26 +21,27 @@ class Button {
       }
       else {
         if (count > 3 && count < 2000) {
-          if (!clicked) {
-            timer ++;
-          }
-          if (timer > 500) {
-            clicked = true;
-            return true;
-          }
+          clicked = true;
+          return true;
+        }
+        else {
+          count = 0;
         }
       }
       return false;
     }
 
     bool longClick (int value) {
-      if (value == LOW && !clicked && count < 2000) {
-        count++;
+      if (value == LOW && !clicked && longCount < 2000) {
+        longCount++;
       }
       else {
-        if (count >= 2000) {
+        if (longCount >= 2000) {
           clicked = true;
           return true;
+        }
+        else {
+          longCount = 0;
         }
       }
       return false;

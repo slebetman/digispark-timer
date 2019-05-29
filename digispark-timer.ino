@@ -3,6 +3,7 @@
 #include "ramp.h"
 #include "delay.h"
 #include "button.h"
+#include "blink.h"
 
 #define SERVO_MIN 1000
 #define SERVO_MAX 2000
@@ -11,38 +12,81 @@ SoftRcPulseOut throttle;
 Tick timer;
 Ramp rampUp(SERVO_MIN, SERVO_MAX);
 Ramp rampDown(SERVO_MAX, SERVO_MIN);
-Button button;
+Ramp longRampDown(SERVO_MAX, SERVO_MIN);
+Delay esc;
 Delay pause;
+Delay longPause;
+Button button;
+Blink escBlink(100);
+Blink runBlink(500);
 
 void setup() {
-  pinMode(0, OUTPUT);
-  pinMode(1, INPUT);
+  pinMode(PIN0, OUTPUT);
+  pinMode(PIN1, OUTPUT);
+  pinMode(PIN2, INPUT_PULLUP);
 
-  throttle.attach(0);
-  button.init();
+  throttle.attach(PIN0);
+  esc.init( 2.5 SECONDS );
   initialize();
 }
 
 void initialize () {
-  rampUp    .init( 1 SECOND  );
-  pause     .init( 5 SECONDS );
-  rampDown  .init( 5 SECONDS );
+  rampUp       .init( 1.5 SECONDS );
+  pause        .init(   5 SECONDS );
+  rampDown     .init(   5 SECONDS );
+
+  longPause    .init(  10 SECONDS );
+  longRampDown .init(  10 SECONDS );
+
+  throttle.write_us(SERVO_MIN);
+  button.init();
 }
 
 // Main loop
 void loop() {
   if (timer.tick()) {
-    if (button.click(digitalRead(1))) {
-      if (rampUp.run()) {
-        throttle.write_us(rampUp.value);
+      if (esc.wait()) { // wait for ESC to initialize
+        digitalWrite(PIN1, escBlink.blink());
       }
-      else if (pause.wait()) {
-        // do nothing
+      else {
+        digitalWrite(PIN1, LOW);
+        int input = digitalRead(PIN2);
+        
+        if (button.click(input)) {
+          if (rampUp.run()) {
+            throttle.write_us(rampUp.value);
+            digitalWrite(PIN1, runBlink.blink());
+          }
+          else if (pause.wait()) {
+            digitalWrite(PIN1, runBlink.blink());
+          }
+          else if (rampDown.run()) {
+            throttle.write_us(rampDown.value);
+            digitalWrite(PIN1, runBlink.blink());
+          }
+          else {
+            digitalWrite(PIN1, LOW);
+            initialize();
+          }
+        }
+        else if (button.longClick(input)) {
+          if (rampUp.run()) {
+            throttle.write_us(rampUp.value);
+            digitalWrite(PIN1, runBlink.blink());
+          }
+          else if (longPause.wait()) {
+            digitalWrite(PIN1, runBlink.blink());
+          }
+          else if (longRampDown.run()) {
+            throttle.write_us(longRampDown.value);
+            digitalWrite(PIN1, runBlink.blink());
+          }
+          else {
+            digitalWrite(PIN1, LOW);
+            initialize();
+          }
+        }
       }
-      else if (rampDown.run()) {
-        throttle.write_us(rampDown.value);
-      }
-    }
   }
 
   SoftRcPulseOut::refresh();

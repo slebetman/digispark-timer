@@ -14,8 +14,8 @@ class Delay {
 	  bool wait () {
 	    tick++;
 	    if (tick >= timeout) {
-	      return true;
+	      return false;
 	    }
-	    return false;
+	    return true;
 	  }
 };

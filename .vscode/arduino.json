@@ -1,0 +1,5 @@
+{
+    "board": "digistump:avr:digispark-tiny",
+    "sketch": "digispark-timer.ino",
+    "port": "/dev/ttyS0"
+}

@@ -3,7 +3,7 @@
         {
             "name": "Linux",
             "includePath": [
-                "/home/adly/.arduino15/**"
+                "~/.arduino15/**"
             ],
             "forcedInclude": [],
             "intelliSenseMode": "gcc-x64",

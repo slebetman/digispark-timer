@@ -16,7 +16,7 @@ class Button {
     }
 
     bool click (int value) {
-      if (value && !clicked) {
+      if (value == LOW && !clicked) {
         count++;
       }
       else {
@@ -34,7 +34,7 @@ class Button {
     }
 
     bool longClick (int value) {
-      if (value && !clicked && count < 2000) {
+      if (value == LOW && !clicked && count < 2000) {
         count++;
       }
       else {

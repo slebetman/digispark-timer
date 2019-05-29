@@ -2,47 +2,46 @@
 #include "tick.h"
 #include "ramp.h"
 #include "delay.h"
+#include "button.h"
 
 #define SERVO_MIN 1000
 #define SERVO_MAX 2000
 
 SoftRcPulseOut throttle;
-SoftRcPulseOut deThermaliser;
 Tick timer;
 Ramp rampUp(SERVO_MIN, SERVO_MAX);
 Ramp rampDown(SERVO_MAX, SERVO_MIN);
+Button button;
 Delay pause;
 
 void setup() {
   pinMode(0, OUTPUT);
-  pinMode(1, OUTPUT);
+  pinMode(1, INPUT);
 
   throttle.attach(0);
-  deThermaliser.attach(1);
+  button.init();
   initialize();
 }
 
 void initialize () {
-  deThermaliser.write_us(SERVO_MAX);
-  rampUp    .init(  1 SECOND  );
-  pause     .init( 10 SECONDS );
-  rampDown  .init( 10 SECONDS );
+  rampUp    .init( 1 SECOND  );
+  pause     .init( 5 SECONDS );
+  rampDown  .init( 5 SECONDS );
 }
 
 // Main loop
 void loop() {
   if (timer.tick()) {
-    if (rampUp.run()) {
-      throttle.write_us(rampUp.value);
-    }
-    else if (pause.wait()) {
-      // do nothing
-    }
-    else if (rampDown.run()) {
-      throttle.write_us(rampDown.value);
-    }
-    else {
-      deThermaliser.write_us(SERVO_MIN);
+    if (button.click(digitalRead(1))) {
+      if (rampUp.run()) {
+        throttle.write_us(rampUp.value);
+      }
+      else if (pause.wait()) {
+        // do nothing
+      }
+      else if (rampDown.run()) {
+        throttle.write_us(rampDown.value);
+      }
     }
   }
 

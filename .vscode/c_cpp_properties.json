@@ -3,7 +3,8 @@
         {
             "name": "Linux",
             "includePath": [
-                "~/.arduino15/**"
+                "~/.arduino15/**",
+                "~/Library/Arduino15/**"
             ],
             "forcedInclude": [],
             "intelliSenseMode": "gcc-x64",

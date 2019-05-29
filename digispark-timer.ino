@@ -11,9 +11,11 @@
 SoftRcPulseOut throttle;
 Tick timer;
 Ramp rampUp(SERVO_MIN, SERVO_MAX);
+Ramp shortRampDown(SERVO_MAX, SERVO_MIN);
 Ramp rampDown(SERVO_MAX, SERVO_MIN);
 Ramp longRampDown(SERVO_MAX, SERVO_MIN);
 Delay esc;
+Delay shortPause;
 Delay pause;
 Delay longPause;
 Button button;
@@ -31,12 +33,15 @@ void setup() {
 }
 
 void initialize () {
-  rampUp       .init( 1.5 SECONDS );
-  pause        .init(   5 SECONDS );
-  rampDown     .init(   5 SECONDS );
+  rampUp        .init( 1.5 SECONDS );
+  pause         .init(   5 SECONDS );
+  rampDown      .init(   5 SECONDS );
 
-  longPause    .init(  10 SECONDS );
-  longRampDown .init(  10 SECONDS );
+  shortPause    .init( 3.5 SECONDS );
+  shortRampDown .init( 1.5 SECONDS );
+
+  longPause     .init(  10 SECONDS );
+  longRampDown  .init(  10 SECONDS );
 
   throttle.write_us(SERVO_MIN);
   button.init();
@@ -79,6 +84,23 @@ void loop() {
           }
           else if (longRampDown.run()) {
             throttle.write_us(longRampDown.value);
+            digitalWrite(PIN1, runBlink.blink());
+          }
+          else {
+            digitalWrite(PIN1, LOW);
+            initialize();
+          }
+        }
+        else if (button.doubleClick(input)) {
+          if (rampUp.run()) {
+            throttle.write_us(rampUp.value);
+            digitalWrite(PIN1, runBlink.blink());
+          }
+          else if (shortPause.wait()) {
+            digitalWrite(PIN1, runBlink.blink());
+          }
+          else if (shortRampDown.run()) {
+            throttle.write_us(shortRampDown.value);
             digitalWrite(PIN1, runBlink.blink());
           }
           else {

@@ -8,12 +8,13 @@ class Ramp {
 	public:
 		int value;
 		
-		Ramp () {}
+		Ramp (int from, int to) {
+		  this->from = from;
+		  this->to = to;
+		}
 	
 	  // assuming 1ms tick
-		void init (int vFrom, int vTo, float seconds) {
-			from = vFrom;
-			to = vTo;
+		void init (float seconds) {
 			increment = 1/seconds;
 			value = from;
       _value = value;

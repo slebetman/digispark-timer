@@ -9,8 +9,8 @@
 SoftRcPulseOut throttle;
 SoftRcPulseOut deThermaliser;
 Tick timer;
-Ramp rampUp;
-Ramp rampDown;
+Ramp rampUp(SERVO_MIN, SERVO_MAX);
+Ramp rampDown(SERVO_MAX, SERVO_MIN);
 Delay pause;
 
 void setup() {
@@ -24,9 +24,9 @@ void setup() {
 
 void initialize () {
   deThermaliser.write_us(SERVO_MAX);
-  rampUp    .init(SERVO_MIN, SERVO_MAX,   1 SECOND   );
-  pause     .init(                       10 SECONDS  );
-  rampDown  .init(SERVO_MAX, SERVO_MIN,  10 SECONDS  );
+  rampUp    .init(  1 SECOND  );
+  pause     .init( 10 SECONDS );
+  rampDown  .init( 10 SECONDS );
 }
 
 // Main loop

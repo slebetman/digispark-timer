@@ -1,15 +1,18 @@
 class Button {
   private:
+    uint8_t pin;
     int count;
     int state;
     int longCount;
     int doubleCount;
     int doubleState;
-    int timer;
     bool clicked;
         
   public:
-    Button () {
+    bool once;
+
+    Button (uint8_t pin) {
+      this->pin = pin;
       init();
     }
 
@@ -20,10 +23,12 @@ class Button {
       doubleCount = 0;
       doubleState = 0;
       clicked = false;
-      timer = 0;
+      once = false;
     }
 
-    bool click (int value) {
+    bool click () {
+      int value = digitalRead(pin);
+
       switch (state) {
         case 0:
           if (value == LOW && !clicked) {
@@ -54,18 +59,22 @@ class Button {
           }
           break;
         case 3:
+          once = !clicked;
           clicked = 1;
           return true;
       }
       return false;
     }
 
-    bool longClick (int value) {
+    bool longClick () {
+      int value = digitalRead(pin);
+
       if (value == LOW && !clicked && longCount < 2000) {
         longCount++;
       }
       else {
         if (longCount >= 2000) {
+          once = !clicked;
           clicked = true;
           return true;
         }
@@ -76,7 +85,9 @@ class Button {
       return false;
     }
 
-    bool doubleClick (int value) {
+    bool doubleClick () {
+      int value = digitalRead(pin);
+
       switch (doubleState) {
         case 0:
           if (value == LOW && !clicked) {
@@ -121,8 +132,15 @@ class Button {
           }
           break;
         case 4:
-          clicked = 1;
-          return true;
+          if (!clicked) {
+            doubleCount++;
+          }
+
+          if (doubleCount > 500) {
+            once = !clicked;
+            clicked = 1;
+            return true;
+          }
       }
       return false;
     }

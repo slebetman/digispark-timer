@@ -2,22 +2,33 @@ class Blink {
   private:
     int count;
     int interval;
+    uint8_t pin;
 
   public:
-    Blink (int interval) {
-      count = 0;
+    Blink (uint8_t pin, int interval) {
       this->interval = interval;
+      this->pin = pin;
+      stop();
     }
 
-    bool blink () {
+    void blink () {
       count ++;
 
       if (count < interval) {
-        return true;
+        digitalWrite(pin, HIGH);
       }
-      else if (count > (interval * 2)) {
+      else {
+        if (count > (interval * 2)) {
+          count = 0;
+        }
+        digitalWrite(pin, LOW);
+      }
+    }
+
+    void stop () {
+      if (count != 0) {
         count = 0;
+        digitalWrite(pin, LOW);
       }
-      return false;
     }
 };

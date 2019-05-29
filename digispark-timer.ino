@@ -18,9 +18,9 @@ void setup() {
 }
 
 void initialize () {
-  rampUp.init(1000, 2000, 1 SECOND);
-  pause.init(5 SECONDS);
-  rampDown.init(2000, 1000, 10 SECONDS);
+  rampUp    .init(1000, 2000,   1 SECOND   );
+  pause     .init(              5 SECONDS  );
+  rampDown  .init(2000, 1000,  10 SECONDS  );
 }
 
 // Main loop

@@ -15,6 +15,7 @@ Ramp rampDown(SERVO_MAX, SERVO_MIN);
 Delay esc;
 Delay pause;
 Button button(PIN2);
+Button cancelButton(PIN2);
 Blink escBlink(PIN1, 100);
 Blink runBlink(PIN1, 500);
 
@@ -31,6 +32,7 @@ void setup() {
 void initialize () {
   throttle.write_us(SERVO_MIN);
   button.init();
+  cancelButton.init();
 }
 
 // Main loop
@@ -80,14 +82,25 @@ void run () {
   }
   else if (pause.wait()) {
     runBlink.blink();
+    if (cancelButton.click()) {
+      end();
+    }
   }
   else if (rampDown.run()) {
     throttle.write_us(rampDown.value);
     runBlink.blink();
+    if (cancelButton.click()) {
+      end();
+    }
   }
   else {
-    runBlink.stop();
-    initialize();
+    end();
   }
 }
+
+void end () {
+  runBlink.stop();
+  initialize();
+}
+
 

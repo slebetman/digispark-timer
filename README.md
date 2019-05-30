@@ -2,6 +2,8 @@
 
 Simple timer for electric free-flight planes
 
+# ![Hardware](./img/digispark-timer.jpeg)
+
 ### Installation
 
 Follow the Didispark installation tutorial: http://digistump.com/wiki/digispark/tutorials/connecting
